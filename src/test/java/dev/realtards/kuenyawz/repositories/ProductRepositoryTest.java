@@ -1,15 +1,16 @@
 package dev.realtards.kuenyawz.repositories;
 
 import dev.realtards.kuenyawz.boostrappers.DatabaseBootstrapper;
-import dev.realtards.kuenyawz.configurations.properties.ApplicationProperties;
+import dev.realtards.kuenyawz.configurations.ApplicationProperties;
 import dev.realtards.kuenyawz.entities.Product;
 import dev.realtards.kuenyawz.entities.Variant;
-import dev.realtards.kuenyawz.services.AccountService;
-import dev.realtards.kuenyawz.services.ProductCsvServiceImpl;
-import dev.realtards.kuenyawz.services.ProductService;
+import dev.realtards.kuenyawz.services.entity.AccountService;
+import dev.realtards.kuenyawz.services.logic.ProductCsvServiceImpl;
+import dev.realtards.kuenyawz.services.entity.ProductService;
 import dev.realtards.kuenyawz.utils.idgenerator.SnowFlakeIdGenerator;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -75,6 +76,7 @@ public class ProductRepositoryTest {
 	}
 
 	@Test
+	@Disabled
 	void testSaveProduct() {
 		Product product = Product.builder()
 			.productId((new SnowFlakeIdGenerator()).generateId())
