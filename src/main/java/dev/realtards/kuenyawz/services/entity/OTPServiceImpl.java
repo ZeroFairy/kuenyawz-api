@@ -25,14 +25,16 @@ public class OTPServiceImpl implements OTPService {
 	private final OTPRepository otpRepository;
 	private final WhatsappApiService whatsappApiService;
 
-	public static final OTPType DEFAULT_OTP_TYPE = OTPType.ALPHA_NUMERIC;
+	private final AccountService accountService;
 
 	@Override
 	public void sendOTP(OtpRequestDto otpRequestDto) {
-		String newOtp = generateOTP(DEFAULT_OTP_TYPE);
+		accountService.validatePhoneNoDuplicate(otpRequestDto.getPhone());
+
+		String newOtp = generateOTP(properties.getOtpFormat());
 		otpRepository.findByPhone(otpRequestDto.getPhone())
 			.ifPresent(otpRepository::delete);
-		OTP otp = otpRepository.save(OTP.builder()
+		otpRepository.save(OTP.builder()
 			.phone(otpRequestDto.getPhone())
 			.otp(newOtp)
 			.ipAddress(otpRequestDto.getIpAddress())
@@ -48,6 +50,7 @@ public class OTPServiceImpl implements OTPService {
 		);
 
 
+		log.info("OTP {} sent to {}", newOtp, otpRequestDto.getPhone());
 		whatsappApiService.send(otpRequestDto.getPhone(), otpMessage, "62");
 //		String response = whatsappApiService.send(otpRequestDto.getPhone(), otpMessage, "62");
 //		log.warn("Response from WhatsApp API: {}", response);
@@ -55,6 +58,8 @@ public class OTPServiceImpl implements OTPService {
 
 	@Override
 	public boolean verifyOTP(OtpVerifyDto otpVerifyDto) {
+		accountService.validatePhoneNoDuplicate(otpVerifyDto.getPhone());
+
 		return matchStoredOTP(otpVerifyDto.getPhone(), otpVerifyDto.getOtp());
 	}
 
